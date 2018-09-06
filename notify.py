@@ -40,7 +40,7 @@ def getTotalFollowers(api, user_id):
     return followers
 
 def updateFollowers(followers):
-    with open(IG_USER+".json","w") as write_file:
+    with open(IG_USER+".json","w+") as write_file:
         json.dump(followers, write_file)
 
 def checkFollowers(api, user_id):
@@ -75,7 +75,7 @@ if __name__ == "__main__":
     if unfollowed != set():
         body =\
         """
-%s users have unfollowed you:
+%s user(s) have unfollowed you:
         
 %s
         """ % (len(unfollowed),setToStr(unfollowed))

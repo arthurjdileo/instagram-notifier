@@ -1,5 +1,27 @@
 from InstagramAPI import InstagramAPI
 import json
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
+IG_USER = ""
+IG_PASS = ""
+EMAIL_USERNAME = ""
+EMAIL_PASS = "!"
+SENDTO = ""
+
+def email(sender, receiver, subject, msg, login, pw):
+    message = MIMEMultipart()
+    message["From"] = sender
+    message["To"] = receiver
+    message["Subject"] = subject
+    message.attach(MIMEText(msg, "plain"))
+    server = smtplib.SMTP("smtp.gmail.com:587")
+    server.starttls()
+    server.login(login,pw)
+    text = message.as_string()
+    server.sendmail(sender,receiver,text)
+    server.quit()
 
 def getTotalFollowers(api, user_id):
     followers = []
@@ -36,14 +58,28 @@ def checkFollowers(api, user_id):
 
     return unfollowed
 
+def setToStr(s):
+    unfollowers = ""
+    for element in s:
+        unfollowers = unfollowers + element + "\n"
+    return unfollowers
 
 if __name__ == "__main__":
-    api = InstagramAPI("USERNAME", "PASSWORD")
+    api = InstagramAPI(IG_USER,IG_PASS)
     api.login()
 
     user_id = api.username_id
 
     followers = getTotalFollowers(api, user_id)
     unfollowed = checkFollowers(api, user_id)
+    if unfollowed != set():
+        body =\
+        """
+%s users have unfollowed you:
+        
+%s
+        """ % (len(unfollowed),setToStr(unfollowed))
+        email("Instagram Notifier", SENDTO, "", body, EMAIL_USERNAME, EMAIL_PASS)
+        print("worked")
     updateFollowers(followers)
     print(unfollowed)

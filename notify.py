@@ -7,7 +7,7 @@ from email.mime.text import MIMEText
 IG_USER = ""
 IG_PASS = ""
 EMAIL_USERNAME = ""
-EMAIL_PASS = "!"
+EMAIL_PASS = ""
 SENDTO = ""
 
 def email(sender, receiver, subject, msg, login, pw):
@@ -40,7 +40,7 @@ def getTotalFollowers(api, user_id):
     return followers
 
 def updateFollowers(followers):
-    with open("followers.json","w") as write_file:
+    with open(IG_USER+".json","w") as write_file:
         json.dump(followers, write_file)
 
 def checkFollowers(api, user_id):
@@ -48,7 +48,7 @@ def checkFollowers(api, user_id):
 
     newFollowers = getTotalFollowers(api, user_id)
 
-    with open("followers.json") as file:
+    with open(IG_USER+".json") as file:
         oldFollowers = json.load(file)
 
 
@@ -80,6 +80,4 @@ if __name__ == "__main__":
 %s
         """ % (len(unfollowed),setToStr(unfollowed))
         email("Instagram Notifier", SENDTO, "", body, EMAIL_USERNAME, EMAIL_PASS)
-        print("worked")
     updateFollowers(followers)
-    print(unfollowed)

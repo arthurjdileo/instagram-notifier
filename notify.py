@@ -1,17 +1,10 @@
 from InstagramAPI import InstagramAPI
 import json
-import time
 
 def getTotalFollowers(api, user_id):
-    """
-    Returns the list of followers of the user.
-    It should be equivalent of calling api.getTotalFollowers from InstagramAPI
-    """
-
     followers = []
     next_max_id = True
     while next_max_id:
-        # first iteration hack
         if next_max_id is True:
             next_max_id = ''
 

@@ -80,4 +80,5 @@ if __name__ == "__main__":
 %s
         """ % (len(unfollowed),setToStr(unfollowed))
         email("Instagram Notifier", SENDTO, "", body, EMAIL_USERNAME, EMAIL_PASS)
+        print("email sent")
     updateFollowers(followers)

@@ -10,6 +10,7 @@ EMAIL_USERNAME = ""
 EMAIL_PASS = ""
 SENDTO = ""
 
+# email function that uses a from and to address to send an email
 def email(sender, receiver, subject, msg, login, pw):
     message = MIMEMultipart()
     message["From"] = sender
@@ -23,6 +24,7 @@ def email(sender, receiver, subject, msg, login, pw):
     server.sendmail(sender,receiver,text)
     server.quit()
 
+# stores all of the followers usernames into a list
 def getTotalFollowers(api, user_id):
     followers = []
     next_max_id = True
@@ -39,10 +41,12 @@ def getTotalFollowers(api, user_id):
         next_max_id = api.LastJson.get('next_max_id', '')
     return followers
 
+# writes + updates json file of the specific user
 def updateFollowers(followers):
     with open(IG_USER+".json","w+") as write_file:
         json.dump(followers, write_file)
 
+#compares stored list of followers with updated list to determine unfollowers
 def checkFollowers(api, user_id):
     unfollowed = set()
 
@@ -58,6 +62,7 @@ def checkFollowers(api, user_id):
 
     return unfollowed
 
+#takes all elements of a set (or similar) and puts it into a multiline string
 def setToStr(s):
     unfollowers = ""
     for element in s:
@@ -65,13 +70,18 @@ def setToStr(s):
     return unfollowers
 
 if __name__ == "__main__":
+    #login to instagram account
     api = InstagramAPI(IG_USER,IG_PASS)
     api.login()
-
     user_id = api.username_id
 
+    #stores list of current followers
     followers = getTotalFollowers(api, user_id)
+
+    #stores list of unfollowed users
     unfollowed = checkFollowers(api, user_id)
+
+    #sends email to client of the users that unfollowed
     if unfollowed != set():
         body =\
         """
@@ -80,5 +90,9 @@ if __name__ == "__main__":
 %s
         """ % (len(unfollowed),setToStr(unfollowed))
         email("Instagram Notifier", SENDTO, "", body, EMAIL_USERNAME, EMAIL_PASS)
-        print("email sent")
+        print(str(len(unfollowed)) + " user(s) have unfollowed you. Email sent.")
+    else:
+        print("Nobody has unfollowed you!")
+
+    #updates local storage of followers with the newly generated list
     updateFollowers(followers)
